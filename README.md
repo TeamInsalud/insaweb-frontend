@@ -1,7 +1,7 @@
 # INSAWEB – Frontend
 
 Aplicación web de INSAWEB para INSALUD: Vite + React + TypeScript + Tailwind. La API está en el
-repositorio [insaweb-backend](https://github.com/candresper/insaweb-backend).
+repositorio [insaweb-backend](https://github.com/TeamInsalud/insaweb-backend).
 
 Los módulos del menú se muestran según los formularios del usuario en `usuariofor` (ver `src/modulos.tsx`):
 Consulta Nómina (`CNFO1203`), Reportes (`COM_FOR`) y Master RRHH (`FONO2301`).
