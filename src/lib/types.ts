@@ -118,6 +118,47 @@ export interface FilaFicha {
   avisos: string[];
 }
 
+export interface AdjuntoCorreo {
+  nombre: string;
+  tipo: string;
+  base64: string;
+  tamano: number;
+}
+
+export interface EnvioCorreo {
+  id: number;
+  creado: string;
+  usuario: string;
+  asunto: string;
+  archivo: string | null;
+  estado: 'activo' | 'pausado' | 'cancelado' | 'terminado';
+  terminado: string | null;
+  total: number;
+  enviados: number;
+  errores: number;
+  pendientes: number;
+  adjuntos: string[];
+}
+
+export interface EstadoCorreos {
+  config: {
+    modo: 'smtp' | 'prueba';
+    remitente: string;
+    configurado: boolean;
+    limite24h: number;
+    lote: number;
+    pausaLoteMin: number;
+    maxAdjuntosBytes: number;
+  };
+  estado: {
+    enviados24h: number;
+    pausaHasta: string | null;
+    motivoPausa: string | null;
+    ultimoError: { fecha: string; tipo: string; mensaje: string } | null;
+  };
+  envios: EnvioCorreo[];
+}
+
 export interface ResultadoBusqueda {
   cedula: string;
   personal: DatosPersonales | null;

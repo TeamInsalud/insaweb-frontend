@@ -1,7 +1,8 @@
-# nginx del frontend. ${API_UPSTREAM} se toma de la variable de entorno al arrancar el contenedor
-# (p. ej. http://10.10.0.6:3001): así el navegador ve la aplicación y la API bajo el mismo nombre, sin CORS.
+# nginx del frontend. ${PUERTO} y ${API_UPSTREAM} se toman de las variables de entorno al arrancar el
+# contenedor (en INSALUD: 5000 y http://10.10.0.7:3001): así el navegador ve la aplicación y la API bajo
+# el mismo nombre y puerto, sin CORS.
 server {
-    listen 80;
+    listen ${PUERTO};
     server_name _;
     root /usr/share/nginx/html;
 

@@ -1,4 +1,14 @@
-import type { DetalleActualizacion, DetallePago, FilaFicha, HistorialAnio, ResultadoBusqueda, TrabajadorResumen, Usuario } from './types';
+import type {
+  AdjuntoCorreo,
+  DetalleActualizacion,
+  DetallePago,
+  EstadoCorreos,
+  FilaFicha,
+  HistorialAnio,
+  ResultadoBusqueda,
+  TrabajadorResumen,
+  Usuario,
+} from './types';
 
 // Dirección del backend. Vacía = mismo origen: en desarrollo Vite y en el servidor nginx envían /api al backend.
 // Solo se define (VITE_API_URL al compilar) si la API se publica en otro nombre o puerto.
@@ -73,6 +83,42 @@ export async function descargarArchivo(url: string, nombrePorDefecto: string) {
 
 export function reporteOtrosConceptos(mes: number) {
   return descargarArchivo(`/api/reportes/otros-conceptos?mes=${mes}`, 'OTROS CONCEPTOS GASTOS DE PERSONAL.xlsx');
+}
+
+// ---- Envío de correos (Master RRHH)
+export function leerDestinatariosCorreo(archivo: File) {
+  return request<{ correos: string[]; duplicados: number; invalidos: { celda: string; valor: string }[] }>(
+    '/api/rrhh/correo/destinatarios',
+    { method: 'POST', headers: { 'Content-Type': 'application/octet-stream' }, body: archivo },
+  );
+}
+
+type MensajeCorreo = { asunto: string; cuerpoHtml: string; adjuntos: AdjuntoCorreo[] };
+
+export function enviarCorreoPrueba(para: string, mensaje: MensajeCorreo) {
+  return request<{ ok: true }>('/api/rrhh/correo/prueba', {
+    method: 'POST',
+    body: JSON.stringify({ para, ...mensaje }),
+  });
+}
+
+export function crearEnvioCorreo(mensaje: MensajeCorreo & { correos: string[]; archivo: string }) {
+  return request<{ id: number; total: number }>('/api/rrhh/correo/envios', {
+    method: 'POST',
+    body: JSON.stringify(mensaje),
+  });
+}
+
+export function estadoCorreos() {
+  return request<EstadoCorreos>('/api/rrhh/correo/envios');
+}
+
+export function accionEnvioCorreo(id: number, accion: 'pausar' | 'reanudar' | 'cancelar') {
+  return request<{ ok: true }>(`/api/rrhh/correo/envios/${id}/${accion}`, { method: 'POST' });
+}
+
+export function erroresEnvioCorreo(id: number) {
+  return request<{ correo: string; error: string }[]>(`/api/rrhh/correo/envios/${id}/errores`);
 }
 
 export function descargarModeloFicha() {

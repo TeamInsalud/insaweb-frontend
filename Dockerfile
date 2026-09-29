@@ -10,14 +10,14 @@ ENV VITE_API_URL=$VITE_API_URL
 RUN npm run build
 
 FROM nginx:1.27-alpine
-# Dirección del backend en el servidor Coolify (10.10.0.7:3001); puede sobreescribirse en Coolify con API_UPSTREAM
+# Valores de INSALUD (se pueden cambiar en Coolify con variables de entorno):
+#   PUERTO: puerto donde escucha la aplicación web dentro del contenedor
+#   API_UPSTREAM: dirección del backend VISTA DESDE EL CONTENEDOR (no usar 127.0.0.1/localhost:
+#                 dentro del contenedor esa dirección es el propio frontend)
+ENV PUERTO=5000
 ENV API_UPSTREAM=http://10.10.0.7:3001
-# Normaliza API_UPSTREAM quitando cualquier '/' final para evitar que nginx recorte el prefijo /api/
-RUN printf '#!/bin/sh\nexport API_UPSTREAM="${API_UPSTREAM%%/}"\n' > /docker-entrypoint.d/15-normalize-upstream.envsh && \
-    chmod +x /docker-entrypoint.d/15-normalize-upstream.envsh
 COPY nginx/default.conf.template /etc/nginx/templates/default.conf.template
 COPY --from=build /app/dist /usr/share/nginx/html
-EXPOSE 80
-
+EXPOSE 5000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD wget -qO- "http://127.0.0.1:80/" > /dev/null || exit 1
+  CMD wget -qO- "http://127.0.0.1:${PUERTO}/" > /dev/null || exit 1

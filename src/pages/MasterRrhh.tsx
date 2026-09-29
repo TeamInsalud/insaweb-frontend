@@ -1,6 +1,7 @@
 import { useRef, useState, type DragEvent } from 'react';
 import { descargarModeloFicha, procesarFichaPersonal, SessionExpiredError } from '../lib/api';
 import type { FilaFicha } from '../lib/types';
+import EnvioCorreos from '../components/EnvioCorreos';
 
 type Paso = 'inicio' | 'analizando' | 'revision' | 'aplicando' | 'resultado';
 
@@ -230,6 +231,8 @@ export default function MasterRrhh({ onLogout }: { onLogout: () => void }) {
           </div>
         </section>
       )}
+
+      <EnvioCorreos onLogout={onLogout} />
     </div>
   );
 }
